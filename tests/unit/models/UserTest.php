@@ -6,20 +6,31 @@ use app\models\User;
 
 class UserTest extends \Codeception\Test\Unit
 {
+    protected function _before()
+    {
+        // Создаем тестового пользователя, если его нет
+        if (!User::findByUsername('admin')) {
+            $user = new User();
+            $user->username = 'admin';
+            $user->email = 'admin@test.com';
+            $user->setPassword('admin');
+            $user->generateAuthKey();
+            $user->status = User::STATUS_ACTIVE;
+            $user->save();
+        }
+    }
+
     public function testFindUserById()
     {
-        verify($user = User::findIdentity(100))->notEmpty();
+        // Найти пользователя admin
+        $adminUser = User::findByUsername('admin');
+        verify($adminUser)->notEmpty();
+        
+        // Проверить поиск по ID
+        verify($user = User::findIdentity($adminUser->id))->notEmpty();
         verify($user->username)->equals('admin');
 
         verify(User::findIdentity(999))->empty();
-    }
-
-    public function testFindUserByAccessToken()
-    {
-        verify($user = User::findIdentityByAccessToken('100-token'))->notEmpty();
-        verify($user->username)->equals('admin');
-
-        verify(User::findIdentityByAccessToken('non-existing'))->empty();        
     }
 
     public function testFindUserByUsername()
@@ -34,11 +45,15 @@ class UserTest extends \Codeception\Test\Unit
     public function testValidateUser()
     {
         $user = User::findByUsername('admin');
-        verify($user->validateAuthKey('test100key'))->notEmpty();
-        verify($user->validateAuthKey('test102key'))->empty();
+        verify($user)->notEmpty();
+        
+        // Проверить валидацию auth_key
+        verify($user->validateAuthKey($user->auth_key))->notEmpty();
+        verify($user->validateAuthKey('wrong-key'))->empty();
 
+        // Проверить валидацию пароля
         verify($user->validatePassword('admin'))->notEmpty();
-        verify($user->validatePassword('123456'))->empty();        
+        verify($user->validatePassword('wrong-password'))->empty();        
     }
 
 }

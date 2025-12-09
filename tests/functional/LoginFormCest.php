@@ -4,6 +4,27 @@ class LoginFormCest
 {
     public function _before(\FunctionalTester $I)
     {
+        // Создать тестовых пользователей, если их нет
+        if (!\app\models\User::findByUsername('admin')) {
+            $user = new \app\models\User();
+            $user->username = 'admin';
+            $user->email = 'admin@test.com';
+            $user->setPassword('admin');
+            $user->generateAuthKey();
+            $user->status = \app\models\User::STATUS_ACTIVE;
+            $user->save();
+        }
+        
+        if (!\app\models\User::findByUsername('demo')) {
+            $demoUser = new \app\models\User();
+            $demoUser->username = 'demo';
+            $demoUser->email = 'demo@test.com';
+            $demoUser->setPassword('demo');
+            $demoUser->generateAuthKey();
+            $demoUser->status = \app\models\User::STATUS_ACTIVE;
+            $demoUser->save();
+        }
+        
         $I->amOnRoute('site/login');
     }
 
@@ -16,7 +37,9 @@ class LoginFormCest
     // demonstrates `amLoggedInAs` method
     public function internalLoginById(\FunctionalTester $I)
     {
-        $I->amLoggedInAs(100);
+        $adminUser = \app\models\User::findByUsername('admin');
+        verify($adminUser)->notEmpty();
+        $I->amLoggedInAs($adminUser->id);
         $I->amOnPage('/');
         $I->see('Logout (admin)');
     }
@@ -24,7 +47,9 @@ class LoginFormCest
     // demonstrates `amLoggedInAs` method
     public function internalLoginByInstance(\FunctionalTester $I)
     {
-        $I->amLoggedInAs(\app\models\User::findByUsername('admin'));
+        $adminUser = \app\models\User::findByUsername('admin');
+        verify($adminUser)->notEmpty();
+        $I->amLoggedInAs($adminUser);
         $I->amOnPage('/');
         $I->see('Logout (admin)');
     }

@@ -8,6 +8,20 @@ class LoginFormTest extends \Codeception\Test\Unit
 {
     private $model;
 
+    protected function _before()
+    {
+        // Создаем тестового пользователя demo, если его нет
+        if (!\app\models\User::findByUsername('demo')) {
+            $user = new \app\models\User();
+            $user->username = 'demo';
+            $user->email = 'demo@test.com';
+            $user->setPassword('demo');
+            $user->generateAuthKey();
+            $user->status = \app\models\User::STATUS_ACTIVE;
+            $user->save();
+        }
+    }
+
     protected function _after()
     {
         \Yii::$app->user->logout();

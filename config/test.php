@@ -15,6 +15,9 @@ return [
     'language' => 'en-US',
     'components' => [
         'db' => $db,
+        'authManager' => [
+            'class' => 'yii\rbac\DbManager',
+        ],
         'mailer' => [
             'class' => \yii\symfonymailer\Mailer::class,
             'viewPath' => '@app/mail',
@@ -29,17 +32,14 @@ return [
             'showScriptName' => true,
         ],
         'user' => [
+            'class' => 'yii\web\User',
             'identityClass' => 'app\models\User',
         ],
+        // request компонент для веб-приложения и unit-тестов
         'request' => [
-            'cookieValidationKey' => 'test',
+            'class' => 'yii\web\Request',
+            'cookieValidationKey' => 'test-key-for-unit-tests',
             'enableCsrfValidation' => false,
-            // but if you absolutely need it set cookie domain to localhost
-            /*
-            'csrfCookie' => [
-                'domain' => 'localhost',
-            ],
-            */
         ],
     ],
     'params' => $params,
