@@ -42,6 +42,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
             ['label' => 'Home', 'url' => ['/site/index']],
             ['label' => 'Книги', 'url' => ['/book/index']],
             ['label' => 'Авторы', 'url' => ['/author/index']],
+            ['label' => 'Отчет', 'url' => ['/report/top-authors']],
             ['label' => 'About', 'url' => ['/site/about']],
             ['label' => 'Contact', 'url' => ['/site/contact']],
             Yii::$app->user->isGuest
