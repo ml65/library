@@ -10,6 +10,7 @@ use app\models\AuthorSubscription;
 use app\services\SmsService;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\Response;
 use yii\web\UploadedFile;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
@@ -29,7 +30,7 @@ class BookController extends Controller
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['index', 'view'],
+                        'actions' => ['index', 'view', 'toggle-view'],
                         'allow' => true,
                         'roles' => ['?', '@'], // guest и user
                     ],
@@ -57,12 +58,31 @@ class BookController extends Controller
     public function actionIndex()
     {
         $searchModel = new BookSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        // Получить режим просмотра из сессии (по умолчанию 'table')
+        $viewMode = Yii::$app->session->get('book_view_mode', 'table');
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $viewMode);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'viewMode' => $viewMode,
         ]);
+    }
+
+    /**
+     * Переключение режима просмотра книг.
+     *
+     * @return Response
+     */
+    public function actionToggleView()
+    {
+        $currentMode = Yii::$app->session->get('book_view_mode', 'table');
+        $newMode = $currentMode === 'table' ? 'cards' : 'table';
+        Yii::$app->session->set('book_view_mode', $newMode);
+        
+        Yii::info("Book view mode toggled: {$currentMode} -> {$newMode}", __CLASS__ . '::' . __FUNCTION__);
+        
+        return $this->redirect(['index']);
     }
 
     /**

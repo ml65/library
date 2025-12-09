@@ -34,12 +34,16 @@ class BookSearch extends Book
      * Создает провайдер данных с применением поискового запроса
      *
      * @param array $params
+     * @param string $viewMode Режим просмотра ('table' или 'cards')
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search($params, $viewMode = 'table')
     {
         $query = Book::find();
+
+        // Оптимизация: загружать авторов для избежания N+1 запросов
+        $query->with('authors');
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
