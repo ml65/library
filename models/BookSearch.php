@@ -7,9 +7,16 @@ use yii\data\ActiveDataProvider;
 
 /**
  * BookSearch представляет модель для поиска и фильтрации книг.
+ * 
+ * @property string $searchQuery Поисковый запрос (по названию или автору)
  */
 class BookSearch extends Book
 {
+    /**
+     * @var string Поисковый запрос (по названию или автору)
+     */
+    public $searchQuery;
+
     /**
      * {@inheritdoc}
      */
@@ -17,7 +24,7 @@ class BookSearch extends Book
     {
         return [
             [['id', 'year'], 'integer'],
-            [['title', 'isbn', 'description'], 'safe'],
+            [['title', 'isbn', 'description', 'searchQuery'], 'safe'],
         ];
     }
 
@@ -28,6 +35,16 @@ class BookSearch extends Book
     {
         // Обход scenarios() в родительском классе
         return Model::scenarios();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        $labels = parent::attributeLabels();
+        $labels['searchQuery'] = 'Поиск';
+        return $labels;
     }
 
     /**
@@ -69,6 +86,17 @@ class BookSearch extends Book
         $query->andFilterWhere(['like', 'title', $this->title])
             ->andFilterWhere(['like', 'isbn', $this->isbn])
             ->andFilterWhere(['like', 'description', $this->description]);
+
+        // Поиск по названию или автору (одна строка поиска)
+        if (!empty($this->searchQuery)) {
+            $query->joinWith('authors')
+                ->andWhere([
+                    'or',
+                    ['like', '{{%book}}.title', $this->searchQuery],
+                    ['like', Author::tableName() . '.full_name', $this->searchQuery]
+                ])
+                ->groupBy('{{%book}}.id'); // Избежать дубликатов при нескольких авторах
+        }
 
         return $dataProvider;
     }

@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\widgets\ActiveForm;
 
 /** @var yii\web\View $this */
 /** @var app\models\BookSearch $searchModel */
@@ -118,6 +119,30 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php else: ?>
         <?php
         // Карточный вид
+        // Форма поиска
+        $form = ActiveForm::begin([
+            'action' => ['index'],
+            'method' => 'get',
+            'options' => ['class' => 'mb-4'],
+        ]);
+        ?>
+        <div class="row mb-3">
+            <div class="col-md-8">
+                <?= $form->field($searchModel, 'searchQuery')->textInput([
+                    'placeholder' => 'Поиск по названию или автору...',
+                    'class' => 'form-control',
+                ])->label(false) ?>
+            </div>
+            <div class="col-md-4">
+                <?= Html::submitButton('Поиск', ['class' => 'btn btn-primary w-100']) ?>
+            </div>
+        </div>
+        <div class="mb-3">
+            <?= Html::a('Сбросить', ['index'], ['class' => 'btn btn-outline-secondary']) ?>
+        </div>
+        <?php ActiveForm::end(); ?>
+        
+        <?php
         $books = $dataProvider->getModels();
         ?>
         <div class="row g-3" id="books-cards">
