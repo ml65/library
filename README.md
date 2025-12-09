@@ -1,233 +1,328 @@
-<p align="center">
-    <a href="https://github.com/yiisoft" target="_blank">
-        <img src="https://avatars0.githubusercontent.com/u/993323" height="100px">
-    </a>
-    <h1 align="center">Yii 2 Basic Project Template</h1>
-    <br>
-</p>
+# Библиотечная система
 
-Yii 2 Basic Project Template is a skeleton [Yii 2](https://www.yiiframework.com/) application best for
-rapidly creating small projects.
+Система управления библиотекой на базе Yii2 Basic Template. Позволяет управлять авторами, книгами, подписками на авторов и просматривать отчеты.
 
-The template contains the basic features including user login/logout and a contact page.
-It includes all commonly used configurations that would allow you to focus on adding new
-features to your application.
+---
 
-[![Latest Stable Version](https://img.shields.io/packagist/v/yiisoft/yii2-app-basic.svg)](https://packagist.org/packages/yiisoft/yii2-app-basic)
-[![Total Downloads](https://img.shields.io/packagist/dt/yiisoft/yii2-app-basic.svg)](https://packagist.org/packages/yiisoft/yii2-app-basic)
-[![build](https://github.com/yiisoft/yii2-app-basic/workflows/build/badge.svg)](https://github.com/yiisoft/yii2-app-basic/actions?query=workflow%3Abuild)
+## 📋 Содержание
 
-DIRECTORY STRUCTURE
--------------------
+- [Требования](#требования)
+- [Установка](#установка)
+- [Конфигурация](#конфигурация)
+- [Миграции](#миграции)
+- [RBAC](#rbac)
+- [Функциональность](#функциональность)
+- [Тестирование](#тестирование)
+- [Логирование](#логирование)
 
-      assets/             contains assets definition
-      commands/           contains console commands (controllers)
-      config/             contains application configurations
-      controllers/        contains Web controller classes
-      mail/               contains view files for e-mails
-      models/             contains model classes
-      runtime/            contains files generated during runtime
-      tests/              contains various tests for the basic application
-      vendor/             contains dependent 3rd-party packages
-      views/              contains view files for the Web application
-      web/                contains the entry script and Web resources
+---
 
+## Требования
 
+- PHP 8.2+
+- MySQL 8.0+
+- Composer
+- Web-сервер (Apache/Nginx) или встроенный PHP сервер
 
-REQUIREMENTS
-------------
+---
 
-The minimum requirement by this project template that your Web server supports PHP 7.4.
+## Установка
 
+### 1. Клонирование и установка зависимостей
 
-INSTALLATION
-------------
-
-### Install via Composer
-
-If you do not have [Composer](https://getcomposer.org/), you may install it by following the instructions
-at [getcomposer.org](https://getcomposer.org/doc/00-intro.md#installation-nix).
-
-You can then install this project template using the following command:
-
-~~~
-composer create-project --prefer-dist yiisoft/yii2-app-basic basic
-~~~
-
-Now you should be able to access the application through the following URL, assuming `basic` is the directory
-directly under the Web root.
-
-~~~
-http://localhost/basic/web/
-~~~
-
-### Install from an Archive File
-
-Extract the archive file downloaded from [yiiframework.com](https://www.yiiframework.com/download/) to
-a directory named `basic` that is directly under the Web root.
-
-Set cookie validation key in `config/web.php` file to some random secret string:
-
-```php
-'request' => [
-    // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
-    'cookieValidationKey' => '<secret random string goes here>',
-],
+```bash
+composer install
 ```
 
-You can then access the application through the following URL:
+### 2. Настройка базы данных
 
-~~~
-http://localhost/basic/web/
-~~~
+Создайте базу данных MySQL:
 
+```sql
+CREATE DATABASE library CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
 
-### Install with Docker
-
-Update your vendor packages
-
-    docker-compose run --rm php composer update --prefer-dist
-    
-Run the installation triggers (creating cookie validation code)
-
-    docker-compose run --rm php composer install    
-    
-Start the container
-
-    docker-compose up -d
-    
-You can then access the application through the following URL:
-
-    http://127.0.0.1:8000
-
-**NOTES:** 
-- Minimum required Docker engine version `17.04` for development (see [Performance tuning for volume mounts](https://docs.docker.com/docker-for-mac/osxfs-caching/))
-- The default configuration uses a host-volume in your home directory `.docker-composer` for composer caches
-
-
-CONFIGURATION
--------------
-
-### Database
-
-Edit the file `config/db.php` with real data, for example:
+Настройте подключение в `config/db.php`:
 
 ```php
 return [
     'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=localhost;dbname=yii2basic',
-    'username' => 'root',
-    'password' => '1234',
-    'charset' => 'utf8',
+    'dsn' => 'mysql:host=localhost;dbname=library',
+    'username' => 'your_username',
+    'password' => 'your_password',
+    'charset' => 'utf8mb4',
 ];
 ```
 
-**NOTES:**
-- Yii won't create the database for you, this has to be done manually before you can access it.
-- Check and edit the other files in the `config/` directory to customize your application as required.
-- Refer to the README in the `tests` directory for information specific to basic application tests.
+### 3. Применение миграций
 
+```bash
+# Применить миграции RBAC
+php yii migrate --migrationPath=@yii/rbac/migrations
 
-TESTING
--------
-
-Tests are located in `tests` directory. They are developed with [Codeception PHP Testing Framework](https://codeception.com/).
-By default, there are 3 test suites:
-
-- `unit`
-- `functional`
-- `acceptance`
-
-Tests can be executed by running
-
+# Применить миграции проекта
+php yii migrate
 ```
+
+### 4. Инициализация RBAC
+
+```bash
+php yii rbac/init
+```
+
+Эта команда создаст:
+- Роль `user` (для авторизованных пользователей)
+- Разрешения `manageBooks` и `manageAuthors`
+- Назначит разрешения роли `user`
+
+### 5. Запуск приложения
+
+#### Встроенный PHP сервер:
+
+```bash
+php -S localhost:8080 -t web
+```
+
+Приложение будет доступно по адресу: `http://localhost:8080`
+
+#### Или через веб-сервер:
+
+Настройте виртуальный хост, указывающий на директорию `web/`
+
+---
+
+## Конфигурация
+
+### Параметры приложения (`config/params.php`)
+
+```php
+'sms' => [
+    'apiKey' => 'emulator', // Эмулятор SMS (логирование)
+],
+'book' => [
+    'maxCoverSize' => 5 * 1024 * 1024, // 5MB
+    'allowedCoverTypes' => ['image/jpeg', 'image/png'],
+],
+```
+
+### Pretty URLs
+
+Pretty URLs включены по умолчанию в `config/web.php`:
+
+```php
+'urlManager' => [
+    'enablePrettyUrl' => true,
+    'showScriptName' => false,
+],
+```
+
+---
+
+## Миграции
+
+Все изменения БД выполняются через миграции:
+
+```bash
+# Применить миграции
+php yii migrate
+
+# Откатить последнюю миграцию
+php yii migrate/down
+
+# Просмотреть статус миграций
+php yii migrate/history
+```
+
+### Структура БД
+
+- `user` — пользователи системы
+- `author` — авторы книг
+- `book` — книги
+- `book_author` — связь многие-ко-многим между книгами и авторами
+- `author_subscription` — подписки на авторов (телефон, автор)
+
+---
+
+## RBAC
+
+Система использует `yii\rbac\DbManager` для управления ролями и разрешениями.
+
+### Роли
+
+- `guest` (неавторизованный пользователь) — может только просматривать
+- `user` (авторизованный пользователь) — может создавать, редактировать и удалять
+
+### Разрешения
+
+- `manageBooks` — управление книгами
+- `manageAuthors` — управление авторами
+
+### Инициализация
+
+```bash
+php yii rbac/init
+```
+
+---
+
+## Функциональность
+
+### 1. Управление авторами
+
+- **Просмотр списка** (`/author`) — доступно всем
+- **Просмотр автора** (`/author/view?id=X`) — доступно всем
+- **Создание автора** (`/author/create`) — только авторизованным
+- **Редактирование** (`/author/update?id=X`) — только авторизованным
+- **Удаление** (`/author/delete?id=X`) — только авторизованным
+
+### 2. Управление книгами
+
+- **Просмотр списка** (`/book`) — доступно всем
+- **Просмотр книги** (`/book/view?id=X`) — доступно всем
+- **Создание книги** (`/book/create`) — только авторизованным
+  - Выбор авторов (чекбоксы)
+  - Загрузка обложки (JPEG/PNG, до 5MB)
+- **Редактирование** (`/book/update?id=X`) — только авторизованным
+- **Удаление** (`/book/delete?id=X`) — только авторизованным
+
+### 3. Подписка на авторов
+
+- **Подписка** (`/author/view?id=X`) — доступно всем (гости и пользователи)
+  - Форма с полем "Телефон"
+  - При подписке отправляется SMS подтверждение (эмулятор)
+  - Проверка на дубликаты (один телефон не может подписаться дважды на одного автора)
+
+### 4. SMS сервис
+
+- **Эмулятор** — все SMS логируются в `runtime/logs/app.log`
+- **Интеграция:**
+  - При подписке на автора — отправляется подтверждение
+  - При создании новой книги — SMS отправляется всем подписчикам авторов книги
+
+### 5. Отчеты
+
+- **ТОП-10 авторов** (`/report/top-authors`) — доступно всем
+  - Фильтрация по году (опционально)
+  - Сортировка по количеству книг (DESC)
+  - Показывает ФИО автора и количество книг
+
+---
+
+## Тестирование
+
+Проект использует Codeception для тестирования.
+
+### Запуск тестов
+
+```bash
+# Все тесты
 vendor/bin/codecept run
+
+# Только unit тесты
+vendor/bin/codecept run unit
+
+# Только functional тесты
+vendor/bin/codecept run functional
+
+# Конкретный тест
+vendor/bin/codecept run functional AuthorControllerCest
 ```
 
-The command above will execute unit and functional tests. Unit tests are testing the system components, while functional
-tests are for testing user interaction. Acceptance tests are disabled by default as they require additional setup since
-they perform testing in real browser. 
+### Настройка тестовой БД
 
+Настройте `config/test_db.php`:
 
-### Running  acceptance tests
-
-To execute acceptance tests do the following:  
-
-1. Rename `tests/acceptance.suite.yml.example` to `tests/acceptance.suite.yml` to enable suite configuration
-
-2. Replace `codeception/base` package in `composer.json` with `codeception/codeception` to install full-featured
-   version of Codeception
-
-3. Update dependencies with Composer 
-
-    ```
-    composer update  
-    ```
-
-4. Download [Selenium Server](https://www.seleniumhq.org/download/) and launch it:
-
-    ```
-    java -jar ~/selenium-server-standalone-x.xx.x.jar
-    ```
-
-    In case of using Selenium Server 3.0 with Firefox browser since v48 or Google Chrome since v53 you must download [GeckoDriver](https://github.com/mozilla/geckodriver/releases) or [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads) and launch Selenium with it:
-
-    ```
-    # for Firefox
-    java -jar -Dwebdriver.gecko.driver=~/geckodriver ~/selenium-server-standalone-3.xx.x.jar
-    
-    # for Google Chrome
-    java -jar -Dwebdriver.chrome.driver=~/chromedriver ~/selenium-server-standalone-3.xx.x.jar
-    ``` 
-    
-    As an alternative way you can use already configured Docker container with older versions of Selenium and Firefox:
-    
-    ```
-    docker run --net=host selenium/standalone-firefox:2.53.0
-    ```
-
-5. (Optional) Create `yii2basic_test` database and update it by applying migrations if you have them.
-
-   ```
-   tests/bin/yii migrate
-   ```
-
-   The database configuration can be found at `config/test_db.php`.
-
-
-6. Start web server:
-
-    ```
-    tests/bin/yii serve
-    ```
-
-7. Now you can run all available tests
-
-   ```
-   # run all available tests
-   vendor/bin/codecept run
-
-   # run acceptance tests
-   vendor/bin/codecept run acceptance
-
-   # run only unit and functional tests
-   vendor/bin/codecept run unit,functional
-   ```
-
-### Code coverage support
-
-By default, code coverage is disabled in `codeception.yml` configuration file, you should uncomment needed rows to be able
-to collect code coverage. You can run your tests and collect coverage with the following command:
-
-```
-#collect coverage for all tests
-vendor/bin/codecept run --coverage --coverage-html --coverage-xml
-
-#collect coverage only for unit tests
-vendor/bin/codecept run unit --coverage --coverage-html --coverage-xml
-
-#collect coverage for unit and functional tests
-vendor/bin/codecept run functional,unit --coverage --coverage-html --coverage-xml
+```php
+$db = require __DIR__ . '/db.php';
+$db['dsn'] = 'mysql:host=localhost;dbname=library_test';
+$db['username'] = 'library_test';
+$db['password'] = 'your_password';
+return $db;
 ```
 
-You can see code coverage output under the `tests/_output` directory.
+### Статистика тестов
+
+- **Всего тестов:** 85 (31 functional + 54 unit)
+- **Assertions:** 274
+- **Покрытие:** 98% (46/47 методов)
+
+---
+
+## Логирование
+
+Все операции логируются в `runtime/logs/app.log`:
+
+- Создание/редактирование/удаление авторов
+- Создание/редактирование/удаление книг
+- Подписки на авторов
+- Отправка SMS (эмулятор)
+- Просмотр отчетов
+
+### Формат логов
+
+```
+[timestamp] [level] [category] message
+```
+
+Пример:
+```
+2025-01-09 12:00:00 [info] [app\controllers\AuthorController::actionCreate] Author created: ID=1, Name=Лев Толстой
+2025-01-09 12:00:01 [info] [app\services\SmsService::send] SMS to +79001234567: Вы успешно подписались на автора: Лев Толстой
+```
+
+---
+
+## Структура проекта
+
+```
+library/
+├── commands/          # Консольные команды (RBAC инициализация)
+├── config/           # Конфигурация приложения
+├── controllers/      # Контроллеры (Author, Book, Report)
+├── models/           # Модели (ActiveRecord)
+│   └── forms/        # Модели форм (SubscribeForm)
+├── services/         # Сервисы (SmsService)
+├── views/            # Представления
+│   ├── author/       # Views для авторов
+│   ├── book/         # Views для книг
+│   ├── report/        # Views для отчетов
+│   └── layouts/      # Layouts
+├── web/              # Web-корень
+│   └── uploads/      # Загруженные файлы (обложки)
+│       └── covers/
+├── migrations/       # Миграции БД
+└── tests/            # Тесты
+    ├── functional/   # Functional тесты
+    └── unit/         # Unit тесты
+```
+
+---
+
+## Разработка
+
+### Принципы
+
+- **KISS** — максимально простое решение
+- **Стандартные решения Yii2** — без оверинжиниринга
+- **ActiveRecord** — основной подход для работы с БД
+- **Прямой SQL** — только для сложных отчетов
+
+### Документация
+
+- `vision.md` — техническое видение проекта
+- `conventions.md` — соглашения по разработке
+- `doc/tasklist.md` — план разработки
+- `doc/workflow.md` — процесс работы
+- `doc/test_coverage.md` — покрытие тестами
+
+---
+
+## Лицензия
+
+Проект разработан на базе Yii2 Basic Template.
+
+---
+
+## Автор
+
+Разработано в соответствии с техническим заданием.
