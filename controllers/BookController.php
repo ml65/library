@@ -151,7 +151,7 @@ class BookController extends Controller
             }
         }
 
-        return $this->render('create', [
+        return $this->render('form', [
             'model' => $model,
         ]);
     }
@@ -196,7 +196,7 @@ class BookController extends Controller
             }
         }
 
-        return $this->render('update', [
+        return $this->render('form', [
             'model' => $model,
         ]);
     }

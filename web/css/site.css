@@ -51,11 +51,17 @@ a.desc:after {
 }
 
 .error-summary {
-    color: #a94442;
-    background: #fdf7f7;
-    border-left: 3px solid #eed3d7;
-    padding: 10px 20px;
-    margin: 0 0 15px 0;
+    color: #dc3545 !important;
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 0.25rem;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+}
+
+.error-summary ul {
+    margin-bottom: 0;
+    padding-left: 1.5rem;
 }
 
 /* align the logout "link" (button in form) of the navbar */
@@ -85,4 +91,38 @@ a.desc:after {
 
 .form-group {
     margin-bottom: 1rem;
+}
+
+/* Стили для ошибок валидации - красный цвет */
+.help-block,
+.invalid-feedback,
+.text-danger,
+.help-block-error {
+    color: #dc3545 !important;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Стили для всех полей форм с ошибками */
+.has-error .form-control,
+.is-invalid,
+.form-control.is-invalid {
+    border-color: #dc3545 !important;
+}
+
+.has-error .help-block,
+.is-invalid ~ .invalid-feedback,
+.invalid-feedback {
+    color: #dc3545 !important;
+    display: block;
+}
+
+/* Специфичные стили для полей книги */
+.field-book-title .help-block,
+.field-book-year .help-block,
+.field-book-description .help-block,
+.field-book-isbn .help-block,
+.field-book-coverFile .help-block,
+.field-book-authorids .help-block {
+    color: #dc3545 !important;
 }

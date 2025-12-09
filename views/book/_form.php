@@ -12,7 +12,12 @@ use app\models\Author;
 
 <div class="book-form">
 
-    <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]); ?>
+    <?php $form = ActiveForm::begin([
+        'options' => ['enctype' => 'multipart/form-data'],
+        'fieldConfig' => [
+            'errorOptions' => ['class' => 'text-danger', 'style' => 'color: red;'],
+        ],
+    ]); ?>
 
     <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
 

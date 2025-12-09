@@ -9,6 +9,7 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use app\models\User;
 
 class SiteController extends Controller
 {
@@ -55,17 +56,18 @@ class SiteController extends Controller
     }
 
     /**
-     * Displays homepage.
+     * Отображение главной страницы.
+     * Редирект на страницу книг.
      *
-     * @return string
+     * @return Response
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        return $this->redirect(['/book/index']);
     }
 
     /**
-     * Login action.
+     * Действие входа в систему.
      *
      * @return Response|string
      */
@@ -87,7 +89,7 @@ class SiteController extends Controller
     }
 
     /**
-     * Logout action.
+     * Действие выхода из системы.
      *
      * @return Response
      */
@@ -99,7 +101,7 @@ class SiteController extends Controller
     }
 
     /**
-     * Displays contact page.
+     * Отображение страницы контактов.
      *
      * @return Response|string
      */
@@ -117,7 +119,7 @@ class SiteController extends Controller
     }
 
     /**
-     * Displays about page.
+     * Отображение страницы "О нас".
      *
      * @return string
      */
@@ -127,7 +129,7 @@ class SiteController extends Controller
     }
 
     /**
-     * Add admin user
+     * Добавление администратора
      *
      * @return void
      */

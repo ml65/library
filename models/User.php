@@ -1,15 +1,15 @@
 <?php
- 
+
 namespace app\models;
- 
+
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
- 
+
 /**
- * User model
+ * Модель пользователя
  *
  * @property integer $id
  * @property string $username
@@ -26,27 +26,27 @@ class User extends ActiveRecord implements IdentityInterface
 {
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 10;
- 
+
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public static function tableName()
     {
         return '{{%user}}';
     }
- 
+
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function behaviors()
     {
         return [
-            TimestampBehavior::className(),
+            TimestampBehavior::class,
         ];
     }
- 
+
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function rules()
     {
@@ -55,25 +55,25 @@ class User extends ActiveRecord implements IdentityInterface
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
         ];
     }
- 
+
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public static function findIdentity($id)
     {
         return static::findOne(['id' => $id, 'status' => self::STATUS_ACTIVE]);
     }
- 
+
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
         throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
     }
- 
+
     /**
-     * Finds user by username
+     * Найти пользователя по имени
      *
      * @param string $username
      * @return static|null
@@ -82,44 +82,44 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return static::findOne(['username' => $username, 'status' => self::STATUS_ACTIVE]);
     }
- 
+
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getId()
     {
         return $this->getPrimaryKey();
     }
- 
+
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getAuthKey()
     {
         return $this->auth_key;
     }
- 
+
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function validateAuthKey($authKey)
     {
         return $this->getAuthKey() === $authKey;
     }
- 
+
     /**
-     * Validates password
+     * Валидация пароля
      *
-     * @param string $password password to validate
-     * @return bool if password provided is valid for current user
+     * @param string $password пароль для валидации
+     * @return bool если пароль валиден для текущего пользователя
      */
     public function validatePassword($password)
     {
         return Yii::$app->security->validatePassword($password, $this->password_hash);
     }
- 
+
     /**
-     * Generates password hash from password and sets it to the model
+     * Генерирует хеш пароля из пароля и устанавливает его в модель
      *
      * @param string $password
      */
@@ -127,13 +127,12 @@ class User extends ActiveRecord implements IdentityInterface
     {
         $this->password_hash = Yii::$app->security->generatePasswordHash($password);
     }
- 
+
     /**
-     * Generates "remember me" authentication key
+     * Генерирует ключ аутентификации "запомнить меня"
      */
     public function generateAuthKey()
     {
         $this->auth_key = Yii::$app->security->generateRandomString();
     }
- 
 }
